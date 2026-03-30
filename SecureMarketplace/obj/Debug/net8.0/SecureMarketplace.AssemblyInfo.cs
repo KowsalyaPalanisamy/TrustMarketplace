@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SecureMarketplace")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+500b2fc17fccc38cd1de38e25236c84a19352ac7")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+35fd6a6ff54e385d93527bc56e58f50448994d2a")]
 [assembly: System.Reflection.AssemblyProductAttribute("SecureMarketplace")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SecureMarketplace")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
