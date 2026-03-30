@@ -65,10 +65,12 @@ public class LoginModel : PageModel
             
             if (roles.Contains("Admin"))
                 return RedirectToPage("/Admin/Dashboard");
+            else if (roles.Contains("Seller"))
+                return RedirectToPage("/Products/Index");
             else
                 return RedirectToPage("/Products/Index");
         }
-
+        
         ErrorMessage = "Invalid login attempt.";
         return Page();
     }
