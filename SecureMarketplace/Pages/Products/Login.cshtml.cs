@@ -18,7 +18,7 @@ public class LoginModel : PageModel
     }
 
     [BindProperty]
-    public InputModel Input { get; set; }
+    public InputModel Input { get; set; } = new();
 
     public string? ErrorMessage { get; set; }
 
@@ -26,13 +26,21 @@ public class LoginModel : PageModel
     {
         [Required]
         [EmailAddress]
-        public string Email { get; set; }
+        public string Email { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Password)]
-        public string Password { get; set; }
+        public string Password { get; set; } = string.Empty;
 
         public bool RememberMe { get; set; }
+    }
+
+    public void OnGet()
+    {
+        if (User.Identity?.IsAuthenticated == true)
+        {
+            Response.Redirect("/Products");
+        }
     }
 
     public async Task<IActionResult> OnPostAsync()
@@ -42,7 +50,6 @@ public class LoginModel : PageModel
             return Page();
         }
 
-        // Find user by email
         var user = await _userManager.FindByEmailAsync(Input.Email);
         if (user == null)
         {
@@ -50,20 +57,16 @@ public class LoginModel : PageModel
             return Page();
         }
 
-        // Attempt login
-        var result = await _signInManager.PasswordSignInAsync(user.UserName, Input.Password, Input.RememberMe, lockoutOnFailure: false);
+        var result = await _signInManager.PasswordSignInAsync(user.UserName!, Input.Password, Input.RememberMe, lockoutOnFailure: false);
 
         if (result.Succeeded)
         {
-            // Redirect based on role
             var roles = await _userManager.GetRolesAsync(user);
             
             if (roles.Contains("Admin"))
                 return RedirectToPage("/Admin/Dashboard");
-            else if (roles.Contains("Seller"))
-                return RedirectToPage("/Products/MyProducts");
             else
-                return RedirectToPage("/Products/Index"); // Buyer
+                return RedirectToPage("/Products/Index");
         }
 
         ErrorMessage = "Invalid login attempt.";

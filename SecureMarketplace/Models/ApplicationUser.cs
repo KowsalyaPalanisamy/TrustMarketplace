@@ -1,14 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 
-namespace SecureMarketplace.Models
+namespace SecureMarketplace.Models;
+
+public class ApplicationUser : IdentityUser
 {
-    public class ApplicationUser : IdentityUser
-    {
-        public string? FullName { get; set; } 
-        public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
-    }
+    [PersonalData]
+    public string? FullName { get; set; }
+    
+    [PersonalData]
+    public DateTime RegisteredAt { get; set; } = DateTime.UtcNow;
+    
+    // Add this collection if you want to access products from user
+    public virtual ICollection<Product>? Products { get; set; }
 }

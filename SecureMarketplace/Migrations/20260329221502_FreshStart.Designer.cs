@@ -11,8 +11,8 @@ using SecureMarketplace.Data;
 namespace SecureMarketplace.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260329145924_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20260329221502_FreshStart")]
+    partial class FreshStart
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -229,6 +229,7 @@ namespace SecureMarketplace.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
+                        .HasMaxLength(2000)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("ImageUrl")
@@ -242,6 +243,7 @@ namespace SecureMarketplace.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired()
+                        .HasMaxLength(200)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
@@ -304,10 +306,17 @@ namespace SecureMarketplace.Migrations
 
             modelBuilder.Entity("SecureMarketplace.Models.Product", b =>
                 {
-                    b.HasOne("SecureMarketplace.Models.ApplicationUser", null)
-                        .WithMany()
+                    b.HasOne("SecureMarketplace.Models.ApplicationUser", "Seller")
+                        .WithMany("Products")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("Seller");
+                });
+
+            modelBuilder.Entity("SecureMarketplace.Models.ApplicationUser", b =>
+                {
+                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }
