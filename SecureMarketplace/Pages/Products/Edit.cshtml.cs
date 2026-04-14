@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using SecureMarketplace.Data;
 using SecureMarketplace.Models;
-using System.ComponentModel.DataAnnotations;
 
 namespace SecureMarketplace.Pages.Products;
 
@@ -22,56 +21,26 @@ public class EditModel : PageModel
     }
 
     [BindProperty]
-    public EditProductModel Product { get; set; } = new();
+    public Product Product { get; set; } = new();
 
     public string? ErrorMessage { get; set; }
 
-    public class EditProductModel
-    {
-        public int Id { get; set; }
-
-        [Required]
-        public string Title { get; set; } = string.Empty;
-
-        [Required]
-        public string Description { get; set; } = string.Empty;
-
-        [Required]
-        [Range(0, 999999.99)]
-        public decimal Price { get; set; }
-    }
-
+    // ==========================================
+    // VULNERABLE CODE - No ownership verification
+    // Any seller can edit ANY product by changing id in URL
+    // ==========================================
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        var currentUser = await _userManager.GetUserAsync(User);
-        if (currentUser == null)
-        {
-            return RedirectToPage("/Account/Login");
-        }
-
+        // DANGEROUS: No check if current seller owns this product
         var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
-
+        
         if (product == null)
         {
             ErrorMessage = "Product not found.";
             return Page();
         }
 
-        // SECURITY: Check if seller owns this product
-        if (product.SellerId != currentUser.Id)
-        {
-            ErrorMessage = "You can only edit your own products.";
-            return Page();
-        }
-
-        Product = new EditProductModel
-        {
-            Id = product.Id,
-            Title = product.Title ?? string.Empty,
-            Description = product.Description ?? string.Empty,
-            Price = product.Price
-        };
-
+        Product = product;
         return Page();
     }
 
@@ -82,29 +51,19 @@ public class EditModel : PageModel
             return Page();
         }
 
-        var currentUser = await _userManager.GetUserAsync(User);
-        var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == Product.Id);
-
-        if (product == null)
+        var existingProduct = await _context.Products.FindAsync(Product.Id);
+        if (existingProduct == null)
         {
             ErrorMessage = "Product not found.";
             return Page();
         }
 
-        // SECURITY: Verify ownership again
-        if (product.SellerId != currentUser?.Id)
-        {
-            ErrorMessage = "You can only edit your own products.";
-            return Page();
-        }
-
-        // Update fields
-        product.Title = Product.Title;
-        product.Description = Product.Description;
-        product.Price = Product.Price;
+        // DANGEROUS: No ownership verification before update
+        existingProduct.Title = Product.Title;
+        existingProduct.Description = Product.Description;
+        existingProduct.Price = Product.Price;
 
         await _context.SaveChangesAsync();
-
         return RedirectToPage("/Products/Index");
     }
 }

@@ -82,7 +82,7 @@
                         <div class="card h-100 shadow-sm">
                             <div class="card-body">
                                 <h5 class="card-title">@product.Title</h5>
-                                <p class="card-text">@(product.Description?.Length > 100 ? product.Description.Substring(0, 100) + "..." : product.Description)</p>
+                                <p class="card-text">@Html.Raw(product.Description)</p>
                                 <h6 class="text-primary">€@product.Price.ToString("F2")</h6>
                                 <small class="text-muted">Posted by: @product.SellerName</small>
                             </div>

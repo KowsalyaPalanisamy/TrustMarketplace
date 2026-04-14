@@ -1,32 +1,32 @@
-using System.ComponentModel.DataAnnotations;
+using System;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SecureMarketplace.Models;
 
+// ==========================================
+// VULNERABLE CODE - Missing input validation
+// No [Required], No [Range], No [StringLength]
+// BUT keeps Seller navigation for existing code
+// ==========================================
 public class Product
 {
-    [Key]
     public int Id { get; set; }
     
-    [Required]
-    [StringLength(200)]
-    public string Title { get; set; } = string.Empty;
+    // VULNERABLE: No validation - can be null, empty, or 10000 characters
+    public string? Title { get; set; }
     
-    [Required]
-    [StringLength(2000)]
-    public string Description { get; set; } = string.Empty;
+    // VULNERABLE: No validation - can be null, empty, or malicious script
+    public string? Description { get; set; }
     
-    [Required]
-    [Range(0, 999999.99)]
-    [DataType(DataType.Currency)]
+    // VULNERABLE: No range validation - can be negative or astronomical
     public decimal Price { get; set; }
     
     public string? ImageUrl { get; set; }
     
-    // Explicit foreign key property
+    // Foreign key to ApplicationUser (Seller)
     public string? SellerId { get; set; }
     
-    // Navigation property
+    // Navigation property - REQUIRED for existing code to work
     [ForeignKey("SellerId")]
     public virtual ApplicationUser? Seller { get; set; }
     

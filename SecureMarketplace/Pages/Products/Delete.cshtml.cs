@@ -23,16 +23,15 @@ public class DeleteModel : PageModel
     public Product? Product { get; set; }
     public string? ErrorMessage { get; set; }
 
+    // ==========================================
+    // VULNERABLE CODE - No ownership verification
+    // Any seller can delete ANY product
+    // ==========================================
     public async Task<IActionResult> OnGetAsync(int id)
     {
-        var currentUser = await _userManager.GetUserAsync(User);
-        if (currentUser == null)
-        {
-            return RedirectToPage("/Account/Login");
-        }
-
+        // DANGEROUS: No check if seller owns this product
         Product = await _context.Products
-            .Include(p => p.Seller)
+            .Include(p => p.SellerId)
             .FirstOrDefaultAsync(p => p.Id == id);
 
         if (Product == null)
@@ -41,34 +40,15 @@ public class DeleteModel : PageModel
             return Page();
         }
 
-        // Check permission: Admin can delete any, Sellers only their own
-        var isAdmin = User.IsInRole("Admin");
-        var isOwner = Product.SellerId == currentUser.Id;
-
-        if (!isAdmin && !isOwner)
-        {
-            ErrorMessage = "You don't have permission to delete this product.";
-            return Page();
-        }
-
         return Page();
     }
 
     public async Task<IActionResult> OnPostAsync(int id)
     {
-        var currentUser = await _userManager.GetUserAsync(User);
         var product = await _context.Products.FindAsync(id);
-
-        if (product == null)
+        if (product != null)
         {
-            return RedirectToPage("/Products/Index");
-        }
-
-        var isAdmin = User.IsInRole("Admin");
-        var isOwner = product.SellerId == currentUser?.Id;
-
-        if (isAdmin || isOwner)
-        {
+            // DANGEROUS: No ownership verification before deletion
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
         }
