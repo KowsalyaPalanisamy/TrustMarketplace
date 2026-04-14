@@ -81,7 +81,7 @@ Use these accounts to test different roles:
 
 ```bash
 # Clone the repository
-git clone https://github.com/YOUR_USERNAME/SecureMarketplace.git
+git clone https://github.com/KowsalyaPalanisamy/SecureMarketplace.git
 
 # Navigate to project folder
 cd SecureMarketplace
