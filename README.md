@@ -89,5 +89,5 @@ cd SecureMarketplace
 # Switch to main branch (secure version)
 git checkout main
 
-# OR switch to vulnerable branch (for testing)
+# OR switch to vulnerable branch (vulnerable code)
 git checkout vulnerability-code
