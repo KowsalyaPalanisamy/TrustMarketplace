@@ -31,8 +31,8 @@ public class DeleteModel : PageModel
     {
         // DANGEROUS: No check if seller owns this product
         Product = await _context.Products
-            .Include(p => p.SellerId)
-            .FirstOrDefaultAsync(p => p.Id == id);
+                    .Include(p => p.Seller)
+                    .FirstOrDefaultAsync(p => p.Id == id);
 
         if (Product == null)
         {
